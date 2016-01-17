@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0-beta1",
+  "description": "A high performance Micro-ORM supporting SQL Server, MySQL, Sqlite, SqlCE, Firebird etc..",
+  "authors": [ "zhouzehui" ],
+  "tags": [ "orm", "sql", "micro-orm" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+  "title": "Dapper dot net",
+  "copyright": "2015 Stack Exchange, Inc.",
+  "frameworks": {
+    "net45": {
+      "compilationOptions": {
+        "define": [ "ASYNC" ]
+      },
+      "frameworkAssemblies": {
+        "System.Data": "4.0.0.0",
+        "System.Data.Linq": "4.0.0.0"
+      },
+      "dependencies": {
+      }
+    }
+  },
+  "dependencies": {
+    "Dapper": "1.50-beta7"
+  }
+}
