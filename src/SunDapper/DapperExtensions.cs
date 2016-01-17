@@ -13,13 +13,13 @@ namespace SunDapper
     public static class DapperExtensions
     {
         #region update
-        public static int Update<T>(this DapperConnection connection, T data, List<string> columns = null, List<string> noColumns = null)
+        public static int Update<T>(this DapperConnection connection, T data, List<string> columns = null, List<string> noColumns = null, IDbTransaction transaction = null)
         {
-            return connection.Execute(GetUpdateSql(connection, data, columns, noColumns), data);
+            return connection.Execute(GetUpdateSql(connection, data, columns, noColumns), data, transaction);
         }
-        public static async Task<int> UpdateAsync<T>(this DapperConnection connection, T data, List<string> columns = null, List<string> noColumns = null)
+        public static async Task<int> UpdateAsync<T>(this DapperConnection connection, T data, List<string> columns = null, List<string> noColumns = null, IDbTransaction transaction = null)
         {
-            return await connection.ExecuteAsync(GetUpdateSql(connection, data, columns, noColumns), data);
+            return await connection.ExecuteAsync(GetUpdateSql(connection, data, columns, noColumns), data,transaction);
         }
         private static string GetUpdateSql<T>(DapperConnection connection, T data, List<string> columns = null, List<string> noColumns = null)
         {
@@ -132,15 +132,15 @@ namespace SunDapper
         }
         #endregion
         #region Delete
-        public static bool Delete<T>(this DapperConnection connection, bool primaryKey)
+        public static bool Delete<T>(this DapperConnection connection, bool primaryKey, IDbTransaction transaction = null)
         {
             var sqlPara = GetDeleteSql<T>(connection, primaryKey);
-            return connection.Execute(sqlPara.Item1, sqlPara.Item2) > 0;
+            return connection.Execute(sqlPara.Item1, sqlPara.Item2,transaction) > 0;
         }
-        public static async Task<bool> DeleteAsync<T>(this DapperConnection connection, bool primaryKey)
+        public static async Task<bool> DeleteAsync<T>(this DapperConnection connection, bool primaryKey, IDbTransaction transaction = null)
         {
             var sqlPara = GetDeleteSql<T>(connection, primaryKey);
-            var count = await connection.ExecuteAsync(sqlPara.Item1, sqlPara.Item2);
+            var count = await connection.ExecuteAsync(sqlPara.Item1, sqlPara.Item2,transaction);
             return count > 0;
         }
         private static Tuple<string, DynamicParameters> GetDeleteSql<T>(DapperConnection connection, object primaryKey)
