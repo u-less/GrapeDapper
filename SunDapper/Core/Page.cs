@@ -13,11 +13,6 @@ namespace SunDapper.Core
         public long CurrentPage { get; set; }
 
         /// <summary>
-        ///     The total number of pages in the full result set
-        /// </summary>
-        public long TotalPages { get; set; }
-
-        /// <summary>
         ///     The total number of records in the full result set
         /// </summary>
         public long TotalItems { get; set; }

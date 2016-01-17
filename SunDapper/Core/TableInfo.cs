@@ -39,9 +39,9 @@ namespace SunDapper.Core
                 ti.Columns = new List<ColumnInfo>();
                 var a = t.GetCustomAttributes(typeof(TableAttribute), true);
                 var tb = a[0] as TableAttribute;
-                ti.TableName = a.Length == 0 ? t.Name : tb.TableName;
+                ti.TableName = a.Length == 0||string.IsNullOrEmpty(tb.TableName) ? t.Name : tb.TableName;
                 ti.AutoIncrement = a.Length == 0 ? true : tb.AutoIncrement;
-                var props = t.GetProperties(System.Reflection.BindingFlags.Public);
+                var props = t.GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
                 foreach (var p in props)
                 {
                     var column = ColumnInfo.FromProperty(p);

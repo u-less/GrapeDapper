@@ -9,8 +9,9 @@ using SunDapper.Sql;
 
 namespace SunDapper
 {
-    public abstract class DapperConnection:DbConnection
+    public class DapperConnection
     {
+        public DbConnection Connection { get; set; }
         public SqlType SqlDbType { get; set; }
         public IProvider SqlProvider { get; set; }
     }
