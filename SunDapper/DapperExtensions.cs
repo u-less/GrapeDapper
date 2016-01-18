@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Data;
 using System.Threading.Tasks;
@@ -21,9 +22,15 @@ namespace SunDapper
         {
             return await connection.Connection.ExecuteAsync(BuildUpdateSql(connection, data, columns, noColumns), data,transaction);
         }
+        private static ConcurrentDictionary<string, string> updateSqlDict = new ConcurrentDictionary<string, string>();
         private static string BuildUpdateSql<T>(DapperConnection connection, T data, List<string> columns = null, List<string> noColumns = null)
         {
             var tb = TableInfo.FromType(typeof(T));
+            string sql;
+            if (columns == null && noColumns == null)
+            {
+                if (updateSqlDict.TryGetValue(tb.TableName, out sql)) return sql;
+            }
             IProvider _provider = connection.SqlProvider;
             object primaryValue;
             var sb = new StringBuilder("UPDATE ");
@@ -42,7 +49,7 @@ namespace SunDapper
                     if (column.IsResult) continue;
                     if (i > 0)
                         sb.Append(", ");
-                    _provider.AppendColumnNameEqualsValue(sb,column.Name);
+                    _provider.AppendColumnNameEqualsValue(sb, column.Name);
                 }
             }
             else
@@ -57,7 +64,12 @@ namespace SunDapper
             }
             sb.Append(" WHERE ");
             _provider.AppendColumnNameEqualsValue(sb, tb.PrimaryColumn.Name);
-            return sb.ToString();
+            sql = sb.ToString();
+            if (columns == null && noColumns == null)
+            {
+                updateSqlDict.TryAdd(tb.TableName, sql);
+            }
+            return sql;
         }
         #endregion
         #region QuerySingle
