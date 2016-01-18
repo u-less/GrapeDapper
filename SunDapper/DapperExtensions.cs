@@ -25,12 +25,13 @@ namespace SunDapper
         private static ConcurrentDictionary<string, string> updateSqlDict = new ConcurrentDictionary<string, string>();
         private static string BuildUpdateSql<T>(DapperConnection connection, T data, List<string> columns = null, List<string> noColumns = null)
         {
-            var tb = TableInfo.FromType(typeof(T));
+            var t = typeof(T);
             string sql;
             if (columns == null && noColumns == null)
             {
-                if (updateSqlDict.TryGetValue(tb.TableName, out sql)) return sql;
+                if (updateSqlDict.TryGetValue(t.FullName, out sql)) return sql;
             }
+            var tb = TableInfo.FromType(t);
             IProvider _provider = connection.SqlProvider;
             object primaryValue;
             var sb = new StringBuilder("UPDATE ");
@@ -67,7 +68,7 @@ namespace SunDapper
             sql = sb.ToString();
             if (columns == null && noColumns == null)
             {
-                updateSqlDict.TryAdd(tb.TableName, sql);
+                updateSqlDict.TryAdd(t.FullName, sql);
             }
             return sql;
         }
@@ -167,13 +168,15 @@ namespace SunDapper
         #region Insert
         public static object Insert<T>(this DapperConnection connection,T data, IDbTransaction transaction = null)
         {
-            var tb = TableInfo.FromType(typeof(T));
-            return connection.SqlProvider.Insert<T>(connection.Connection, tb, data, transaction);
+            var tType = typeof(T);
+            var tb = TableInfo.FromType(tType);
+            return connection.SqlProvider.Insert<T>(connection.Connection, tb, data,tType, transaction);
         }
         public static async Task<object> InsertAsync<T>(this DapperConnection connection, T data, IDbTransaction transaction = null)
         {
-            var tb = TableInfo.FromType(typeof(T));
-            return await connection.SqlProvider.InsertAsync<T>(connection.Connection, tb, data, transaction);
+            var tType = typeof(T);
+            var tb = TableInfo.FromType(tType);
+            return await connection.SqlProvider.InsertAsync<T>(connection.Connection, tb, data, tType, transaction);
         }
         #endregion Insert
     }
