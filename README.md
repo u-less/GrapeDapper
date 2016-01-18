@@ -10,7 +10,7 @@ Example usage:
     { 
 
         [PrimaryKey]//主键标记
-        public int ModuleId
+        public int Id
         {
             get;
             set;
@@ -28,7 +28,7 @@ Example usage:
             set;
         }
         [Column]//标记为列，可有可无
-        public string ModuleKey
+        public string key
         {
             get;
             set;
