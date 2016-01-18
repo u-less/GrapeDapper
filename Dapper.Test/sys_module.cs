@@ -12,7 +12,7 @@ namespace DapperT.Test
        /// <summary>
       /// 编号
       /// </summary>
-        [PrimaryKey]
+        [Key]
         public int ModuleId
         {
             get;

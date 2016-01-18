@@ -23,7 +23,7 @@ namespace SunDapper.Core
         public static ColumnInfo FromProperty(PropertyInfo propertyInfo,bool explicitColumn=false)
         {
             var colAttrs = propertyInfo.GetCustomAttributes(typeof(ColumnAttribute), true);
-            var keyAttrs= propertyInfo.GetCustomAttributes(typeof(PrimaryKeyAttribute), true);
+            var keyAttrs= propertyInfo.GetCustomAttributes(typeof(KeyAttribute), true);
             if (explicitColumn)
             {
                 if (colAttrs.Length == 0&& keyAttrs.Length==0)
@@ -52,7 +52,7 @@ namespace SunDapper.Core
             {
                 if (keyAttrs.Length > 0)
                 {
-                    var keyAttr = (PrimaryKeyAttribute)keyAttrs[0];
+                    var keyAttr = (KeyAttribute)keyAttrs[0];
                     ci.Name = keyAttr.Name == null ? propertyInfo.Name : keyAttr.Name;
                     ci.IsPrimaryKey = true;
                     ci.PropInfo = propertyInfo;
