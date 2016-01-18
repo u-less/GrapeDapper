@@ -9,14 +9,19 @@ using SunDapper.Sql;
 
 namespace SunDapper
 {
-    public class DapperConnection
+    public class DapperConnection:IDisposable
     {
         public DbConnection Connection { get; set; }
         public SqlType SqlDbType { get; set; }
         public IProvider SqlProvider { get; set; }
+
         public static implicit operator DbConnection(DapperConnection connection)
         {
             return connection.Connection;
+        }
+        public void Dispose()
+        {
+            Connection.Dispose();
         }
     }
 }
