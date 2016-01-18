@@ -56,17 +56,17 @@
     <Compile Include="DapperConnection.cs" />
     <Compile Include="DapperExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sql\IPagingHelper.cs" />
-    <Compile Include="Sql\IProvider.cs" />
-    <Compile Include="Sql\PagingHelper.cs" />
-    <Compile Include="Sql\Provider\DatabaseProvider.cs" />
-    <Compile Include="Sql\Provider\MySqlDatabaseProvider.cs" />
-    <Compile Include="Sql\Provider\PostgreSQLDatabaseProvider.cs" />
-    <Compile Include="Sql\Provider\ProviderFactory.cs" />
-    <Compile Include="Sql\Provider\SQLiteDatabaseProvider.cs" />
-    <Compile Include="Sql\Provider\SqlServerDatabaseProvider.cs" />
-    <Compile Include="Sql\SQLParts.cs" />
-    <Compile Include="Sql\SqlType.cs" />
+    <Compile Include="SqlAdapter\IPagingHelper.cs" />
+    <Compile Include="SqlAdapter\IProvider.cs" />
+    <Compile Include="SqlAdapter\PagingHelper.cs" />
+    <Compile Include="SqlAdapter\Provider\DatabaseProvider.cs" />
+    <Compile Include="SqlAdapter\Provider\MySqlDatabaseProvider.cs" />
+    <Compile Include="SqlAdapter\Provider\PostgreSQLDatabaseProvider.cs" />
+    <Compile Include="SqlAdapter\Provider\ProviderFactory.cs" />
+    <Compile Include="SqlAdapter\Provider\SQLiteDatabaseProvider.cs" />
+    <Compile Include="SqlAdapter\Provider\SqlServerDatabaseProvider.cs" />
+    <Compile Include="SqlAdapter\SQLParts.cs" />
+    <Compile Include="SqlAdapter\SqlType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
