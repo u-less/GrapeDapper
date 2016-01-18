@@ -31,7 +31,6 @@ using (var conn = GetConnection())
 ```csharp
 using (var conn = GetConnection())
 {
-
     var data = conn.Single<sys_module>(14);
     data.Name = "Test";
     int count= conn.Update(data);
@@ -47,7 +46,6 @@ using (var conn = GetConnection())
 ```csharp
 using (var conn = GetConnection())
 {
-
     var data = conn.Single<sys_module>(14);
     data.Name = "Test";
     int id= conn.Insert(data);
@@ -58,7 +56,6 @@ using (var conn = GetConnection())
 ```csharp
 using (var conn = GetConnection())
 {
-
     conn.Delete<sys_module>(14);
     await conn.DeleteAsync<sys_module>(14);
 }
