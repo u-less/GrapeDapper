@@ -45,11 +45,14 @@ namespace DapperT.Test
             {
                 Stopwatch watch = new Stopwatch();
                 watch.Start();
-                for (int i = 0; i < 10000; i++)
+                for (int i = 0; i < 1000; i++)
                 {
                     var data = conn.QueryPage<sys_module>(1, 10, "SELECT * FROM sys_module where moduleid<@maxId", new { maxId = 10 });
-                   // var data = conn.Connection.QuerySingle<sys_module>("SELECT * FROM sys_module where moduleid=@moduleid", new { moduleid = 14 });
+                    // var data = conn.Connection.QuerySingle<sys_module>("SELECT * FROM sys_module where moduleid=@moduleid", new { moduleid = 14 });
                 }
+                //var data = conn.Single<sys_module>(14);
+                //data.ModuleKey = "wode1";
+                //var id = conn.Delete<sys_module>(89);
                 watch.Stop();
                 Console.WriteLine("10000次列表查询,每次查询13条数据，耗时：{0} 秒{1}毫秒", watch.Elapsed.Seconds, watch.Elapsed.Milliseconds);
                 Console.ReadLine();

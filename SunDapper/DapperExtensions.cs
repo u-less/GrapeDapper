@@ -131,12 +131,12 @@ namespace SunDapper
         }
         #endregion
         #region Delete
-        public static bool Delete<T>(this DapperConnection connection, bool primaryKey, IDbTransaction transaction = null)
+        public static bool Delete<T>(this DapperConnection connection, object primaryKey, IDbTransaction transaction = null)
         {
             var sqlPara = BuildDeleteSql<T>(connection, primaryKey);
             return connection.Connection.Execute(sqlPara.Item1, sqlPara.Item2,transaction) > 0;
         }
-        public static async Task<bool> DeleteAsync<T>(this DapperConnection connection, bool primaryKey, IDbTransaction transaction = null)
+        public static async Task<bool> DeleteAsync<T>(this DapperConnection connection, object primaryKey, IDbTransaction transaction = null)
         {
             var sqlPara = BuildDeleteSql<T>(connection, primaryKey);
             var count = await connection.Connection.ExecuteAsync(sqlPara.Item1, sqlPara.Item2,transaction);
@@ -146,7 +146,7 @@ namespace SunDapper
         {
             var tb = TableInfo.FromType(typeof(T));
             IProvider provider = connection.SqlProvider;
-            var sql = string.Format("DELETE {0} WHERE {1}", provider.EscapeTableName(tb.TableName), provider.GetColumnNameEqualsValue(tb.PrimaryColumn.Name));
+            var sql = string.Format("DELETE FROM {0} WHERE {1}", provider.EscapeTableName(tb.TableName), provider.GetColumnNameEqualsValue(tb.PrimaryColumn.Name));
             DynamicParameters paras = new DynamicParameters();
             paras.Add(tb.PrimaryColumn.Name, primaryKey);
             return Tuple.Create(sql, paras);
