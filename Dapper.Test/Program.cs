@@ -33,8 +33,7 @@ namespace DapperT.Test
             conn.Connection = connection;
             conn.SqlDbType = SunDapper.Sql.SqlType.Npgsql;
             conn.SqlProvider = SunDapper.Sql.Provider.ProviderFactory.GetProvider(conn.SqlDbType);
-            const string sql = "SELECT * from sys_module";
-
+           // const string sql = "SELECT * from sys_module";
             //const string sqlOne = @"SELECT * from sys_module LIMIT 10 OFFSET 0 
             //                       SELECT COUNT(*) from sys_module";
             //using (var multi = connection.QueryMultiple(sqlOne))
@@ -48,7 +47,7 @@ namespace DapperT.Test
                 watch.Start();
                 for (int i = 0; i < 10000; i++)
                 {
-                    var data = conn.Single<sys_module>(14);
+                    var data = conn.QueryPage<sys_module>(1, 10, "SELECT * FROM sys_module where moduleid<@maxId", new { maxId = 10 });
                    // var data = conn.Connection.QuerySingle<sys_module>("SELECT * FROM sys_module where moduleid=@moduleid", new { moduleid = 14 });
                 }
                 watch.Stop();

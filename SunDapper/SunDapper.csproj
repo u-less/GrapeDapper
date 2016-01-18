@@ -49,7 +49,7 @@
     <Compile Include="Core\IgnoreAttribute.cs" />
     <Compile Include="Core\Page.cs" />
     <Compile Include="Core\PrimaryKeyAttribute.cs" />
-    <Compile Include="Core\ResultColumnAttribute.cs" />
+    <Compile Include="Core\ResultAttribute.cs" />
     <Compile Include="Core\SingleInstance.cs" />
     <Compile Include="Core\TableAttribute.cs" />
     <Compile Include="Core\TableInfo.cs" />

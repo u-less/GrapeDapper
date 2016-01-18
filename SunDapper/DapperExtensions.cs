@@ -12,20 +12,19 @@ namespace SunDapper
 {
     public static class DapperExtensions
     {
-        #region update
+        #region Update
         public static int Update<T>(this DapperConnection connection, T data, List<string> columns = null, List<string> noColumns = null, IDbTransaction transaction = null)
         {
-            return connection.Connection.Execute(GetUpdateSql(connection, data, columns, noColumns), data, transaction);
+            return connection.Connection.Execute(BuildUpdateSql(connection, data, columns, noColumns), data, transaction);
         }
         public static async Task<int> UpdateAsync<T>(this DapperConnection connection, T data, List<string> columns = null, List<string> noColumns = null, IDbTransaction transaction = null)
         {
-            return await connection.Connection.ExecuteAsync(GetUpdateSql(connection, data, columns, noColumns), data,transaction);
+            return await connection.Connection.ExecuteAsync(BuildUpdateSql(connection, data, columns, noColumns), data,transaction);
         }
-        private static string GetUpdateSql<T>(DapperConnection connection, T data, List<string> columns = null, List<string> noColumns = null)
+        private static string BuildUpdateSql<T>(DapperConnection connection, T data, List<string> columns = null, List<string> noColumns = null)
         {
             var tb = TableInfo.FromType(typeof(T));
             IProvider _provider = connection.SqlProvider;
-            string prefix = _provider.GetParameterPrefix(connection.Connection.ConnectionString);
             object primaryValue;
             var sb = new StringBuilder("UPDATE ");
             sb.Append(_provider.EscapeTableName(tb.TableName)).Append(" SET ");
@@ -35,7 +34,7 @@ namespace SunDapper
                 {
                     var column = tb.Columns[i];
                     if (noColumns.Contains(column.Name)) continue;
-                    if (column.Name.Equals(tb.PrimaryColumn))
+                    if (column.Name.Equals(tb.PrimaryColumn.Name))
                     {
                         primaryValue = column.GetValue(data);
                         if (tb.AutoIncrement) continue;
@@ -43,7 +42,7 @@ namespace SunDapper
                     if (column.IsResult) continue;
                     if (i > 0)
                         sb.Append(", ");
-                    sb.Append(_provider.EscapeSqlIdentifier(column.Name)).Append(" = ").Append(prefix).Append(column.Name);
+                    _provider.AppendColumnNameEqualsValue(sb,column.Name);
                 }
             }
             else
@@ -53,47 +52,47 @@ namespace SunDapper
                     var column = columns[i];
                     if (i > 0)
                         sb.Append(", ");
-                    sb.Append(_provider.EscapeSqlIdentifier(column)).Append(" = ").Append(prefix).Append(column);
+                    _provider.AppendColumnNameEqualsValue(sb, column);
                 }
             }
-            sb.Append(" WHERE ").Append(_provider.EscapeSqlIdentifier(tb.PrimaryColumn.Name)).Append(" = ").Append(prefix).Append(tb.PrimaryColumn.Name);
+            sb.Append(" WHERE ");
+            _provider.AppendColumnNameEqualsValue(sb, tb.PrimaryColumn.Name);
             return sb.ToString();
         }
         #endregion
         #region QuerySingle
         public static T Single<T>(this DapperConnection connection, object primaryKey)
         {
-            var sqlPara = GetSingleSql<T>(connection, primaryKey);
+            var sqlPara = BuildSingleSql<T>(connection, primaryKey);
             return connection.Connection.QuerySingle<T>(sqlPara.Item1, sqlPara.Item2);
         }
         public static async Task<T> SingleAsync<T>(this DapperConnection connection, object primaryKey)
         {
-            var sqlPara = GetSingleSql<T>(connection, primaryKey);
+            var sqlPara = BuildSingleSql<T>(connection, primaryKey);
             return await connection.Connection.QuerySingleAsync<T>(sqlPara.Item1, sqlPara.Item2);
         }
         public static T SingleOrDefault<T>(this DapperConnection connection, object primaryKey)
         {
-            var sqlPara = GetSingleSql<T>(connection, primaryKey);
+            var sqlPara = BuildSingleSql<T>(connection, primaryKey);
             return connection.Connection.QuerySingleOrDefault<T>(sqlPara.Item1, sqlPara.Item2);
         }
         public static async Task<T> SingleOrDefaultAsync<T>(this DapperConnection connection, object primaryKey)
         {
-            var sqlPara = GetSingleSql<T>(connection, primaryKey);
+            var sqlPara = BuildSingleSql<T>(connection, primaryKey);
             return await connection.Connection.QuerySingleOrDefaultAsync<T>(sqlPara.Item1, sqlPara.Item2);
         }
-        private static Tuple<string, DynamicParameters> GetSingleSql<T>(DapperConnection connection, object primaryKey)
+        private static Tuple<string, DynamicParameters> BuildSingleSql<T>(DapperConnection connection, object primaryKey)
         {
             var tb = TableInfo.FromType(typeof(T));
             IProvider provider = connection.SqlProvider;
-            string prefix = provider.GetParameterPrefix(connection.Connection.ConnectionString);
-            var sql = string.Format("SELECT * FROM {0} WHERE {1} = {2}{3}", provider.EscapeTableName(tb.TableName), provider.EscapeSqlIdentifier(tb.PrimaryColumn.Name), provider.GetParameterPrefix(connection.Connection.ConnectionString), tb.PrimaryColumn.Name);
+            var sql = string.Format("SELECT * FROM {0} WHERE {1}", provider.EscapeTableName(tb.TableName), provider.GetColumnNameEqualsValue(tb.PrimaryColumn.Name));
             DynamicParameters paras = new DynamicParameters();
             paras.Add(tb.PrimaryColumn.Name, primaryKey);
             return Tuple.Create(sql, paras);
         }
         #endregion
-        #region queryPage
-        public static Page<T> QueryPage<T>(this DapperConnection connection, long page, long pageSize, string sql, object param=null)
+        #region QueryPage
+        public static Page<T> QueryPage<T>(this DapperConnection connection, long page, long pageSize, string sql, object param=null, CommandType? commandType = null)
         {
             var tb = TableInfo.FromType(typeof(T));
             SQLParts parts;
@@ -108,10 +107,11 @@ namespace SunDapper
                 result.Items = multi.Read<T>().ToList();
                 result.TotalItems = multi.ReadSingle<long>();
                 result.CurrentPage = page;
+                result.PageSize = pageSize;
             }
             return result;
         }
-        public static async Task<Page<T>> QueryPageAsync<T>(this DapperConnection connection, long page, long pageSize, string sql, object param=null)
+        public static async Task<Page<T>> QueryPageAsync<T>(this DapperConnection connection, long page, long pageSize, string sql, object param=null, CommandType? commandType = null)
         {
             var tb = TableInfo.FromType(typeof(T));
             SQLParts parts;
@@ -133,25 +133,36 @@ namespace SunDapper
         #region Delete
         public static bool Delete<T>(this DapperConnection connection, bool primaryKey, IDbTransaction transaction = null)
         {
-            var sqlPara = GetDeleteSql<T>(connection, primaryKey);
+            var sqlPara = BuildDeleteSql<T>(connection, primaryKey);
             return connection.Connection.Execute(sqlPara.Item1, sqlPara.Item2,transaction) > 0;
         }
         public static async Task<bool> DeleteAsync<T>(this DapperConnection connection, bool primaryKey, IDbTransaction transaction = null)
         {
-            var sqlPara = GetDeleteSql<T>(connection, primaryKey);
+            var sqlPara = BuildDeleteSql<T>(connection, primaryKey);
             var count = await connection.Connection.ExecuteAsync(sqlPara.Item1, sqlPara.Item2,transaction);
             return count > 0;
         }
-        private static Tuple<string, DynamicParameters> GetDeleteSql<T>(DapperConnection connection, object primaryKey)
+        private static Tuple<string, DynamicParameters> BuildDeleteSql<T>(DapperConnection connection, object primaryKey)
         {
             var tb = TableInfo.FromType(typeof(T));
             IProvider provider = connection.SqlProvider;
-            string prefix = provider.GetParameterPrefix(connection.Connection.ConnectionString);
-            var sql = string.Format("DELETE {0} WHERE {1} = {2}{3}", provider.EscapeTableName(tb.TableName), provider.EscapeSqlIdentifier(tb.PrimaryColumn.Name), provider.GetParameterPrefix(connection.Connection.ConnectionString), tb.PrimaryColumn.Name);
+            var sql = string.Format("DELETE {0} WHERE {1}", provider.EscapeTableName(tb.TableName), provider.GetColumnNameEqualsValue(tb.PrimaryColumn.Name));
             DynamicParameters paras = new DynamicParameters();
             paras.Add(tb.PrimaryColumn.Name, primaryKey);
             return Tuple.Create(sql, paras);
         }
         #endregion
+        #region Insert
+        public static object Insert<T>(this DapperConnection connection,T data, IDbTransaction transaction = null)
+        {
+            var tb = TableInfo.FromType(typeof(T));
+            return connection.SqlProvider.Insert<T>(connection.Connection, tb, data, transaction);
+        }
+        public static async Task<object> InsertAsync<T>(this DapperConnection connection, T data, IDbTransaction transaction = null)
+        {
+            var tb = TableInfo.FromType(typeof(T));
+            return await connection.SqlProvider.InsertAsync<T>(connection.Connection, tb, data, transaction);
+        }
+        #endregion Insert
     }
 }

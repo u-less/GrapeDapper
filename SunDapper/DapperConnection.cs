@@ -14,5 +14,9 @@ namespace SunDapper
         public DbConnection Connection { get; set; }
         public SqlType SqlDbType { get; set; }
         public IProvider SqlProvider { get; set; }
+        public static implicit operator DbConnection(DapperConnection connection)
+        {
+            return connection.Connection;
+        }
     }
 }

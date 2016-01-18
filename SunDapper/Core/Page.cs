@@ -11,7 +11,10 @@ namespace SunDapper.Core
         ///     The current page number contained in this page of result set
         /// </summary>
         public long CurrentPage { get; set; }
-
+        /// <summary>
+        /// all page count
+        /// </summary>
+        public long TotalPage { get; set; }
         /// <summary>
         ///     The total number of records in the full result set
         /// </summary>
@@ -20,7 +23,7 @@ namespace SunDapper.Core
         /// <summary>
         ///     The number of items per page
         /// </summary>
-        public long ItemsPerPage { get; set; }
+        public long PageSize { get; set; }
 
         /// <summary>
         ///     The actual records on this page

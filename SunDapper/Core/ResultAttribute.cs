@@ -3,20 +3,20 @@
 namespace SunDapper.Core
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class ResultColumnAttribute : ColumnAttribute
+    public class ResultAttribute : ColumnAttribute
     {
         /// <summary>
-        ///     Constructs a new instance of the <seealso cref="ResultColumnAttribute" />.
+        ///     Constructs a new instance of the <seealso cref="ResultAttribute" />.
         /// </summary>
-        public ResultColumnAttribute()
+        public ResultAttribute()
         {
         }
 
         /// <summary>
-        ///     Constructs a new instance of the <seealso cref="ResultColumnAttribute" />.
+        ///     Constructs a new instance of the <seealso cref="ResultAttribute" />.
         /// </summary>
         /// <param name="name">The name of the DB column.</param>
-        public ResultColumnAttribute(string name)
+        public ResultAttribute(string name)
             : base(name)
         {
         }

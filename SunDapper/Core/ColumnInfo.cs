@@ -45,7 +45,7 @@ namespace SunDapper.Core
                 ci.Name = colattr.Name == null ? propertyInfo.Name : colattr.Name;
                 ci.ForceToUtc = colattr.ForceToUtc;
                 ci.IsPrimaryKey = false;
-                if ((colattr as ResultColumnAttribute) != null)
+                if ((colattr as ResultAttribute) != null)
                     ci.IsResult = true;
             }
             else
