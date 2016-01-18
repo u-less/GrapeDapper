@@ -10,7 +10,7 @@ Example usage:
     public class sys_module
     { 
 
-        [PrimaryKey]//主键标记
+        [Key]//主键标记
         public int Id
         {
             get;
