@@ -14,7 +14,7 @@ using (var conn = GetConnection())
                     "SELECT * FROM sys_module where moduleid<@maxId", new { maxId = 10 });
     var pageList = await conn.QueryPageAsync<sys_module>(currentPage, pageSize,
                     "SELECT * FROM sys_module where moduleid<@maxId", new { maxId = 10 });
-    
+    var allCount=pageList.TotalItems;//获取总共多少条数据
 }
 ```
 
