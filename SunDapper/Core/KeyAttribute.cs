@@ -3,7 +3,7 @@
 namespace SunDapper.Core
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class PrimaryKeyAttribute : Attribute
+    public class KeyAttribute : Attribute
     {
         /// <summary>
         ///     The column name.
@@ -15,10 +15,10 @@ namespace SunDapper.Core
 
 
         /// <summary>
-        ///     Constructs a new instance of the <seealso cref="PrimaryKeyAttribute" />.
+        ///     Constructs a new instance of the <seealso cref="KeyAttribute" />.
         /// </summary>
         /// <param name="primaryKey">The name of the primary key column.</param>
-        public PrimaryKeyAttribute(string columnName=null)
+        public KeyAttribute(string columnName=null)
         {
             Name = columnName;
         }
