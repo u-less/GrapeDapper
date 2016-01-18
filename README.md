@@ -3,6 +3,38 @@
 所有功能都支持异步操作，Sql使用模板缓存，首次以外基本达到手写性能
 
 Example usage:
+`@实体定义`
+```csharp
+    [Table(AutoIncrement = true)]//表标记，括号里为主键是否是自增
+    public class sys_module
+    { 
+
+        [PrimaryKey]//主键标记
+        public int ModuleId
+        {
+            get;
+            set;
+        }
+        [Ignore]//完全忽略，不参与数据库操作，逻辑字段
+        public string Name
+        {
+            get;
+            set;
+        }
+        [Result]//标记为结果字段，只对查询结果有用，对新增修改无用
+        public int ParentId
+        {
+            get;
+            set;
+        }
+        [Column]//标记为列，可有可无
+        public string ModuleKey
+        {
+            get;
+            set;
+        }
+    }
+```
 
 `@查询分页数据`
 ```csharp
