@@ -11,17 +11,17 @@ namespace SunDapper
 {
     public class DapperConnection:IDisposable
     {
-        public DbConnection Connection { get; set; }
+        public DbConnection Base { get; set; }
         public SqlType SqlDbType { get; set; }
         public IProvider SqlProvider { get; set; }
 
         public static implicit operator DbConnection(DapperConnection connection)
         {
-            return connection.Connection;
+            return connection.Base;
         }
         public void Dispose()
         {
-            Connection.Dispose();
+            Base.Dispose();
         }
     }
 }

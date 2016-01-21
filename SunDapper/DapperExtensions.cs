@@ -16,11 +16,11 @@ namespace SunDapper
         #region Update
         public static int Update<T>(this DapperConnection connection, T data, List<string> columns = null, List<string> noColumns = null, IDbTransaction transaction = null)
         {
-            return connection.Connection.Execute(BuildUpdateSql(connection, data, columns, noColumns), data, transaction);
+            return connection.Base.Execute(BuildUpdateSql(connection, data, columns, noColumns), data, transaction);
         }
         public static async Task<int> UpdateAsync<T>(this DapperConnection connection, T data, List<string> columns = null, List<string> noColumns = null, IDbTransaction transaction = null)
         {
-            return await connection.Connection.ExecuteAsync(BuildUpdateSql(connection, data, columns, noColumns), data,transaction);
+            return await connection.Base.ExecuteAsync(BuildUpdateSql(connection, data, columns, noColumns), data,transaction);
         }
         private static ConcurrentDictionary<string, string> updateSqlDict = new ConcurrentDictionary<string, string>();
         private static string BuildUpdateSql<T>(DapperConnection connection, T data, List<string> columns = null, List<string> noColumns = null)
@@ -77,22 +77,22 @@ namespace SunDapper
         public static T Single<T>(this DapperConnection connection, object primaryKey)
         {
             var sqlPara = BuildSingleSql<T>(connection, primaryKey);
-            return connection.Connection.QuerySingle<T>(sqlPara.Item1, sqlPara.Item2);
+            return connection.Base.QuerySingle<T>(sqlPara.Item1, sqlPara.Item2);
         }
         public static async Task<T> SingleAsync<T>(this DapperConnection connection, object primaryKey)
         {
             var sqlPara = BuildSingleSql<T>(connection, primaryKey);
-            return await connection.Connection.QuerySingleAsync<T>(sqlPara.Item1, sqlPara.Item2);
+            return await connection.Base.QuerySingleAsync<T>(sqlPara.Item1, sqlPara.Item2);
         }
         public static T SingleOrDefault<T>(this DapperConnection connection, object primaryKey)
         {
             var sqlPara = BuildSingleSql<T>(connection, primaryKey);
-            return connection.Connection.QuerySingleOrDefault<T>(sqlPara.Item1, sqlPara.Item2);
+            return connection.Base.QuerySingleOrDefault<T>(sqlPara.Item1, sqlPara.Item2);
         }
         public static async Task<T> SingleOrDefaultAsync<T>(this DapperConnection connection, object primaryKey)
         {
             var sqlPara = BuildSingleSql<T>(connection, primaryKey);
-            return await connection.Connection.QuerySingleOrDefaultAsync<T>(sqlPara.Item1, sqlPara.Item2);
+            return await connection.Base.QuerySingleOrDefaultAsync<T>(sqlPara.Item1, sqlPara.Item2);
         }
         private static Tuple<string, DynamicParameters> BuildSingleSql<T>(DapperConnection connection, object primaryKey)
         {
@@ -114,8 +114,8 @@ namespace SunDapper
             string pageSql = connection.SqlProvider.BuildPageQuery((page - 1) * pageSize, pageSize, parts, ref param);
             string sqlCount = parts.SqlCount;
             var result = new Page<T>();
-            var list= connection.Connection.Query<T>(pageSql,param);
-            using (var multi = connection.Connection.QueryMultiple(pageSql + ";" + sqlCount, param))
+            var list= connection.Base.Query<T>(pageSql,param);
+            using (var multi = connection.Base.QueryMultiple(pageSql + ";" + sqlCount, param))
             {
                 result.Items = multi.Read<T>().ToList();
                 result.TotalItems = multi.ReadSingle<long>();
@@ -133,7 +133,7 @@ namespace SunDapper
             string pageSql = connection.SqlProvider.BuildPageQuery((page - 1) * pageSize, pageSize, parts, ref param);
             string sqlCount = parts.SqlCount;
             var result = new Page<T>();
-            using (var multi =await connection.Connection.QueryMultipleAsync(pageSql + " " + sqlCount, param))
+            using (var multi =await connection.Base.QueryMultipleAsync(pageSql + " " + sqlCount, param))
             {
                 var items = await multi.ReadAsync<T>();
                 result.Items =items.ToList();
@@ -147,12 +147,12 @@ namespace SunDapper
         public static bool Delete<T>(this DapperConnection connection, object primaryKey, IDbTransaction transaction = null)
         {
             var sqlPara = BuildDeleteSql<T>(connection, primaryKey);
-            return connection.Connection.Execute(sqlPara.Item1, sqlPara.Item2,transaction) > 0;
+            return connection.Base.Execute(sqlPara.Item1, sqlPara.Item2,transaction) > 0;
         }
         public static async Task<bool> DeleteAsync<T>(this DapperConnection connection, object primaryKey, IDbTransaction transaction = null)
         {
             var sqlPara = BuildDeleteSql<T>(connection, primaryKey);
-            var count = await connection.Connection.ExecuteAsync(sqlPara.Item1, sqlPara.Item2,transaction);
+            var count = await connection.Base.ExecuteAsync(sqlPara.Item1, sqlPara.Item2,transaction);
             return count > 0;
         }
         private static Tuple<string, DynamicParameters> BuildDeleteSql<T>(DapperConnection connection, object primaryKey)
@@ -170,13 +170,13 @@ namespace SunDapper
         {
             var tType = typeof(T);
             var tb = TableInfo.FromType(tType);
-            return connection.SqlProvider.Insert<T>(connection.Connection, tb, data,tType, transaction);
+            return connection.SqlProvider.Insert<T>(connection.Base, tb, data,tType, transaction);
         }
         public static async Task<object> InsertAsync<T>(this DapperConnection connection, T data, IDbTransaction transaction = null)
         {
             var tType = typeof(T);
             var tb = TableInfo.FromType(tType);
-            return await connection.SqlProvider.InsertAsync<T>(connection.Connection, tb, data, tType, transaction);
+            return await connection.SqlProvider.InsertAsync<T>(connection.Base, tb, data, tType, transaction);
         }
         #endregion Insert
     }

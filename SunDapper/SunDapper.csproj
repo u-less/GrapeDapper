@@ -55,6 +55,7 @@
     <Compile Include="Core\TableInfo.cs" />
     <Compile Include="DapperConnection.cs" />
     <Compile Include="DapperExtensions.cs" />
+    <Compile Include="DbFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlAdapter\IPagingHelper.cs" />
     <Compile Include="SqlAdapter\IProvider.cs" />
