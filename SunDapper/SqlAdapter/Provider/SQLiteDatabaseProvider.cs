@@ -44,5 +44,9 @@ namespace SunDapper.Sql.Provider
         {
             return string.Format("\"{0}\" = @{1}", columnName, columnName);
         }
+        public override string GetExistsSql(string table, string whereSql)
+        {
+            return string.Format("SELECT EXISTS (SELECT 1 FROM [{0}] WHERE {1})",table,whereSql);
+        }
     }
 }

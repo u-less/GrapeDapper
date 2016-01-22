@@ -84,7 +84,11 @@ namespace SunDapper.Sql.Provider
         }
         public virtual async Task<object> InsertAsync<T>(IDbConnection connection, TableInfo tableInfo, T data, Type tType, IDbTransaction transaction = null)
         {
-            return null;
+            return await Task.FromResult<object>(null);
+        }
+        public virtual string GetExistsSql(string table,string whereSql)
+        {
+            return string.Format("select 1 FROM {0} WHERE {1} LIMIT 1",table,whereSql);
         }
     }
 }

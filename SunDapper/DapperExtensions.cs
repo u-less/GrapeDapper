@@ -179,5 +179,39 @@ namespace SunDapper
             return await connection.SqlProvider.InsertAsync<T>(connection.Base, tb, data, tType, transaction);
         }
         #endregion Insert
+        #region exits
+        public static bool Exists<T>(this DapperConnection connection, object primaryKey)
+        {
+            var tType = typeof(T);
+            var tb = TableInfo.FromType(tType);
+            var sql = connection.SqlProvider.GetExistsSql(tb.TableName,string.Format(connection.SqlProvider.GetColumnNameEqualsValue(tb.PrimaryColumn.Name)));
+            DynamicParameters paras = new DynamicParameters();
+            paras.Add(tb.PrimaryColumn.Name, primaryKey);
+            return connection.Base.ExecuteScalar<int>(sql, paras) !=0;
+        }
+        public static async Task<bool> ExistsAsync<T>(this DapperConnection connection, object primaryKey)
+        {
+            var tType = typeof(T);
+            var tb = TableInfo.FromType(tType);
+            var sql = connection.SqlProvider.GetExistsSql(tb.TableName, string.Format(connection.SqlProvider.GetColumnNameEqualsValue(tb.PrimaryColumn.Name)));
+            DynamicParameters paras = new DynamicParameters();
+            paras.Add(tb.PrimaryColumn.Name, primaryKey);
+            return await connection.Base.ExecuteScalarAsync<int>(sql, paras) != 0;
+        }
+        public static bool Exists<T>(this DapperConnection connection, string whereSql, object param = null)
+        {
+            var tType = typeof(T);
+            var tb = TableInfo.FromType(tType);
+            var sql = connection.SqlProvider.GetExistsSql(tb.TableName,whereSql);
+            return connection.Base.ExecuteScalar<int>(sql, param) != 0;
+        }
+        public static async Task<bool> ExistsAsync<T>(this DapperConnection connection, string whereSql, object param = null)
+        {
+            var tType = typeof(T);
+            var tb = TableInfo.FromType(tType);
+            var sql = connection.SqlProvider.GetExistsSql(tb.TableName, whereSql);
+            return await connection.Base.ExecuteScalarAsync<int>(sql, param) != 0;
+        }
+        #endregion
     }
 }

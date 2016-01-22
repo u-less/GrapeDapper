@@ -21,5 +21,6 @@ namespace SunDapper.Sql
         string BuildPageQuery(long skip, long take, SQLParts parts, ref object param);
         object Insert<T>(IDbConnection connection, TableInfo tableInfo, T data, Type tType, IDbTransaction transaction = null);
         Task<object> InsertAsync<T>(IDbConnection connection, TableInfo tableInfo, T data, Type tType, IDbTransaction transaction = null);
+        string GetExistsSql(string table, string whereSql);
     }
 }

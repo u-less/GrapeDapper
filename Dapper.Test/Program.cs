@@ -47,6 +47,7 @@ namespace DapperT.Test
                     long currentPage = 1;
                     long pageSize = 10;
                     var data = conn.QueryPage<sys_module>(currentPage, pageSize, "SELECT * FROM sys_module where moduleid<@maxId", new { maxId = 10 });
+                    var exts = conn.Exists<sys_module>("moduleid>@maxId", new { maxId = 10000 });
                 }
                 Console.WriteLine("10000次列表查询,每次查询13条数据，耗时：{0} 秒{1}毫秒", watch.Elapsed.Seconds, watch.Elapsed.Milliseconds);
                 Console.ReadLine();
