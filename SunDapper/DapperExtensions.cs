@@ -13,6 +13,36 @@ namespace SunDapper
 {
     public static class DapperExtensions
     {
+        #region All
+        public static IEnumerable<T> GetAll<T>(this DapperConnection connection,bool keyAsc=true)
+        {
+            var tType = typeof(T);
+            var tb = TableInfo.FromType(tType);
+            string sql = string.Format("SELECT * FROM {0} ORDER BY {1} {2}", tb.TableName, tb.PrimaryColumn.Name, keyAsc ? "ASC":"DESC");
+            return connection.Base.Query<T>(sql);
+        }
+        public static async Task<IEnumerable<T>> GetAllAsync<T>(this DapperConnection connection, bool keyAsc = true)
+        {
+            var tType = typeof(T);
+            var tb = TableInfo.FromType(tType);
+            string sql = string.Format("SELECT * FROM {0} ORDER BY {1} {2}", tb.TableName, tb.PrimaryColumn.Name, keyAsc ? "ASC" : "DESC");
+            return await connection.Base.QueryAsync<T>(sql);
+        }
+        public static Page<T> GetAllPage<T>(this DapperConnection connection, long page, long pageSize, bool keyAsc = true)
+        {
+            var tType = typeof(T);
+            var tb = TableInfo.FromType(tType);
+            string sql = string.Format("SELECT * FROM {0} ORDER BY {1} {2}", tb.TableName, tb.PrimaryColumn.Name, keyAsc ? "ASC" : "DESC");
+            return connection.QueryPage<T>(page, pageSize, sql);
+        }
+        public static async Task<Page<T>> GetAllPageAsync<T>(this DapperConnection connection, long page, long pageSize, bool keyAsc = true)
+        {
+            var tType = typeof(T);
+            var tb = TableInfo.FromType(tType);
+            string sql = string.Format("SELECT * FROM {0} ORDER BY {1} {2}", tb.TableName, tb.PrimaryColumn.Name, keyAsc ? "ASC" : "DESC");
+            return await connection.QueryPageAsync<T>(page, pageSize, sql);
+        }
+        #endregion
         #region Update
         public static int Update<T>(this DapperConnection connection, T data, List<string> columns = null, List<string> noColumns = null, IDbTransaction transaction = null)
         {
