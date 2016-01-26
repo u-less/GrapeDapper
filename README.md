@@ -4,7 +4,7 @@
 
 Example usage:
 
-`@实体定义`
+`@实体定义(可使用标记也可以不使用标记，使用标记是为了提供更多的灵活性)`
 ```csharp
     [Table(AutoIncrement = true)]//表标记，括号里为主键是否是自增
     public class sys_module
@@ -35,6 +35,16 @@ Example usage:
             set;
         }
     }
+```
+`@查询所有数据`
+```csharp
+using (var conn = GetConnection())
+{
+    conn.GetAll<sys_module>();
+    await conn.GetAllAsync<sys_module>();
+    conn.GetAllPage<sys_module>(1,10);
+    await conn.GetAllPageAsync<sys_module>(1,10);
+}
 ```
 
 `@查询分页数据`
@@ -91,5 +101,15 @@ using (var conn = GetConnection())
 {
     conn.Delete<sys_module>(14);
     await conn.DeleteAsync<sys_module>(14);
+}
+```
+`@判断数据是否存在`
+```csharp
+using (var conn = GetConnection())
+{
+    conn.Exists<sys_module>(14);
+    await conn.ExistsAsync<sys_module>(14);
+    conn.Exists<sys_module>("moduleid=@moduleid",new{moduleid=14});
+    await conn.ExistsAsync<sys_module>("moduleid=@moduleid",new{moduleid=14});
 }
 ```
