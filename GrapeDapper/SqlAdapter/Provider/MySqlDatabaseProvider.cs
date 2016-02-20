@@ -21,12 +21,14 @@ namespace GrapeDapper.SqlAdapter.Provider
         }
         public override object Insert<T>(IDbConnection connection, TableInfo tableInfo, T data, Type tType, IDbTransaction transaction = null)
         {
-            connection.Execute(GetInsertSql(tableInfo,tType.FullName), data, transaction);
+            var count = connection.Execute(GetInsertSql(tableInfo, tType.FullName), data, transaction);
+            if (!tableInfo.AutoIncrement) return count;
             return connection.ExecuteScalar("Select LAST_INSERT_ID()", transaction: transaction);
         }
         public override async Task<object> InsertAsync<T>(IDbConnection connection, TableInfo tableInfo, T data, Type tType, IDbTransaction transaction = null)
         {
-            await connection.ExecuteAsync(GetInsertSql(tableInfo, tType.FullName), data, transaction);
+            var count = await connection.ExecuteAsync(GetInsertSql(tableInfo, tType.FullName), data, transaction);
+            if (!tableInfo.AutoIncrement) return count;
             return await connection.ExecuteScalarAsync("Select LAST_INSERT_ID()", transaction: transaction);
         }
         public override string GetColumnName(string columnName)

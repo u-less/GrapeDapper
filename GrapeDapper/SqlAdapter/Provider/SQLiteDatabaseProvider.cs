@@ -11,17 +11,19 @@ namespace GrapeDapper.SqlAdapter.Provider
 {
     public class SQLiteDatabaseProvider : DatabaseProvider
     {
-        private string GetInsertSql(TableInfo tableInfo,string name)
+        private string GetInsertSql(TableInfo tableInfo, string name)
         {
             return GetInsertSqlFromCache(name, () =>
             {
                 var part = GetInsertSqlParts(tableInfo);
-                return string.Format("insert into {0} ({1}) values ({2}); SELECT last_insert_rowid()", tableInfo.TableName, part.Item1, part.Item2);
+                if (tableInfo.AutoIncrement)
+                    return string.Format("insert into {0} ({1}) values ({2}); SELECT last_insert_rowid()", tableInfo.TableName, part.Item1, part.Item2);
+                else
+                    return string.Format("insert into {0} ({1}) values ({2});", tableInfo.TableName, part.Item1, part.Item2);
             });
         }
         public override object Insert<T>(IDbConnection connection, TableInfo tableInfo, T data, Type tType, IDbTransaction transaction = null)
         {
-            
             return connection.ExecuteScalar(GetInsertSql(tableInfo, tType.FullName), data, transaction);
         }
         public override async Task<object> InsertAsync<T>(IDbConnection connection, TableInfo tableInfo, T data, Type tType, IDbTransaction transaction = null)
