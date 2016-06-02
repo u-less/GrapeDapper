@@ -10,7 +10,7 @@ namespace GrapeDapper
 {
     public class DbFactory
     {
-        public DbFactory(SqlType dbType)
+        public DbFactory(SqlType dbType,string connectionString)
         {
             switch (dbType)
             {
@@ -19,6 +19,7 @@ namespace GrapeDapper
                 case SqlType.SQLite:Provider = SQLiteFactory(); break;
                 default:Provider = SqlServerFactory(); break;
             }
+            _connectionString = connectionString;
         }
         private string _connectionString;
         public DbProviderFactory Provider { get; private set; }
@@ -28,6 +29,7 @@ namespace GrapeDapper
             var connection = Provider.CreateConnection();
             DapperConnection conn = new DapperConnection();
             conn.Base = connection;
+            conn.Base.ConnectionString = _connectionString;
             conn.SqlDbType = SqlType.Npgsql;
             conn.SqlProvider = SqlAdapter.Provider.ProviderFactory.GetProvider(conn.SqlDbType);
             return conn;
