@@ -206,6 +206,18 @@ namespace GrapeDapper
             var tb = TableInfo.FromType(tType);
             return await connection.SqlProvider.InsertAsync<T>(connection.Base, tb, data, tType, transaction);
         }
+        public static object Insert<T>(this DapperConnection connection, T[] data, IDbTransaction transaction = null)
+        {
+            var tType = typeof(T);
+            var tb = TableInfo.FromType(tType);
+            return connection.SqlProvider.Insert<T[]>(connection.Base, tb, data, tType, transaction);
+        }
+        public static async Task<object> InsertAsync<T>(this DapperConnection connection, T[] data, IDbTransaction transaction = null)
+        {
+            var tType = typeof(T);
+            var tb = TableInfo.FromType(tType);
+            return await connection.SqlProvider.InsertAsync<T[]>(connection.Base, tb, data, tType, transaction);
+        }
         #endregion Insert
         #region exits
         public static bool Exists<T>(this DapperConnection connection, object primaryKey)
